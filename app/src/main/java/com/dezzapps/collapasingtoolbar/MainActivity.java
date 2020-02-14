@@ -1,11 +1,17 @@
 package com.dezzapps.collapasingtoolbar;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,6 +33,8 @@ import fillings.models.Manchego;
 import fillings.models.Mozzarella;
 
 public class MainActivity extends AppCompatActivity {
+    CustomAdapter adapter;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,23 +42,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+       setToolbar();
+       setFloatingActionButtom();
 
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.float_action_button);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Clis", Toast.LENGTH_LONG).show();
-            }
-        });
 
-        RecyclerView recyclerView = findViewById(R.id.recycler);
+       recyclerView = findViewById(R.id.recycler);
 
         List<Cheese> cheeses = createCheeses();
-        CustomAdapter adapter = new CustomAdapter(cheeses);
+        adapter = new CustomAdapter(cheeses);
 
         recyclerView.setLayoutManager(new LinearLayoutManager((this)));
 
@@ -58,10 +59,105 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new ItemDivider(this, R.drawable.item_divider));
         recyclerView.setHasFixedSize(true);
 
+        boolean iWantSwipes = true;
+
+        if(iWantSwipes){
+            recyclerView.setHasFixedSize(false);
+        }else {
+            recyclerView.setHasFixedSize(true);
+        }
+
+        setItemTouchHelper();
 
 
     }
 
+    private void setToolbar(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+    }
+
+    private void setFloatingActionButtom(){
+        FloatingActionButton fab = findViewById(R.id.float_action_button);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+
+                builder.setView(inflater.inflate(R.layout.checkout_dialog, null))
+                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                Intent intent = new Intent(MainActivity.this, CheckoutActivity.class);
+                                startActivity(intent);
+                            }
+                        }).setNegativeButton(getString(R.string.note), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        Toast.makeText(MainActivity.this, getString(R.string.cancel_buy), Toast.LENGTH_SHORT).show();
+
+                    }
+                }).create()
+                        .show();
+
+//                builder.setTitle(getString(R.string.checkout))
+//                        .setMessage(getString(R.string.msg_checkout))
+//                        .setIcon(R.drawable.ic_add_shopping_cart_black_24dp)
+//                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                        Intent intent = new Intent(MainActivity.this, CheckoutActivity.class);
+//                        startActivity(intent);
+//                    }
+//                }).setNegativeButton(getString(R.string.note), new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                        Toast.makeText(MainActivity.this, getString(R.string.cancel_buy), Toast.LENGTH_SHORT).show();
+//
+//                    }
+//                }).create()
+//                .show();
+            }
+        });
+    }
+
+    private void setItemTouchHelper(){
+
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT ) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+
+
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+                if(direction == ItemTouchHelper.LEFT){
+                    Toast.makeText(MainActivity.this, "Izquierda", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(MainActivity.this, "Derecha", Toast.LENGTH_SHORT).show();
+
+                }
+                int position = viewHolder.getAdapterPosition();
+                adapter.removeItem(position);
+            }
+        };
+
+        ItemTouchHelper helper = new ItemTouchHelper(callback);
+        helper.attachToRecyclerView(recyclerView);
+
+    }
 
     private List<Cheese> createCheeses(){
 

@@ -46,5 +46,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CheeseHolder> {
     }
 
 
+    public void removeItem(int position){
+        cheeses.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, cheeses.size());
+    }
+
+
 
 }

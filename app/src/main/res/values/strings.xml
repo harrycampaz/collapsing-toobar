@@ -2,4 +2,9 @@
     <string name="app_name">Quesos</string>
     <string name="queso">Queso</string>
     <string name="enviar">Enviar</string>
+    <string name="checkout">Finalizar Compra</string>
+    <string name="msg_checkout">Quieres finalizar la compra</string>
+    <string name="yes">Si</string>
+    <string name="note">No</string>
+    <string name="cancel_buy">Compra cancelada</string>
 </resources>
