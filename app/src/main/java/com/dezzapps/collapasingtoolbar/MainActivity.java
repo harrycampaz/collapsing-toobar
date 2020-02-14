@@ -1,12 +1,17 @@
 package com.dezzapps.collapasingtoolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
 
 import com.dezzapps.collapasingtoolbar.adapter.CustomAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +33,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = findViewById(R.id.float_action_button);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "Clis", Toast.LENGTH_LONG).show();
+            }
+        });
+
         RecyclerView recyclerView = findViewById(R.id.recycler);
 
         List<Cheese> cheeses = createCheeses();
@@ -36,7 +55,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager((this)));
 
         recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new ItemDivider(this, R.drawable.item_divider));
         recyclerView.setHasFixedSize(true);
+
+
+
     }
 
 
